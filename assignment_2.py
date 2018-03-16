@@ -152,7 +152,6 @@ class Assignment2:
         return (mean, var)
 
     def _mean(self, stock):
-        """Mean by hand"""
         summation = 0
         counter = 0
         for val in self._returns[stock]:
@@ -161,24 +160,27 @@ class Assignment2:
         return summation / counter
 
     def _var(self, stock):
-        """Var by hand"""
         summation = 0
         counter = 0
         mean = self._mean(stock)
+
         for val in self._returns[stock]:
             summation += (val - mean)**2
             counter += 1
+
         return summation / (counter - 1)
 
     def _cov(self, stock1, stock2):
-        """Covariance between two stocks by hand"""
         summation = 0
         counter = 0
+
         mean1 = self._mean(stock1)
         mean2 = self._mean(stock2)
+
         for val1, val2 in zip(self._returns[stock1], self._returns[stock2]):
             summation += (val1 - mean1) * (val2 - mean2)
             counter += 1
+
         return summation / (counter - 1)
 
 Assignment2().task_1()
