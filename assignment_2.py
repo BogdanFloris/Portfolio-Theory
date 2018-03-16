@@ -204,7 +204,7 @@ class Assignment2:
 
         # compute the mean return per year, and the variance per year for future.csv
         portfolio_mean_return_future = 252 * self._future['Returns'].mean()
-        portfolio_variance_future = 252 * self._history['Returns'].var()
+        portfolio_variance_future = 252 * self._future['Returns'].var()
         
         # compute the sharpe ratio for future.csv
         sharpe_ratio_future = (portfolio_mean_return_future - self._rf) / sqrt(portfolio_variance_future)
