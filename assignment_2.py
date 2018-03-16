@@ -27,10 +27,11 @@ class Assignment2:
         print(self._returns.cov() * 252)
 
     def task_2(self):
-        """Task 2"""
-        # get the means
+        # generate the mean return per stock (for a year)
         means = np.asarray(self._returns.mean() * 252)
-        # get the covariance matrix and the inverse
+
+        # generate the covariance matrix and its inverse;
+        # also generate the row of ones
         cov_matrix = (self._returns.cov() * 252).as_matrix()
         inverse_cov_matrix = np.linalg.inv(cov_matrix)
         ones = np.asarray([1] * len(means))
@@ -39,11 +40,15 @@ class Assignment2:
         weights_min = np.dot(
             ones, inverse_cov_matrix) / np.dot(
                 np.dot(ones, inverse_cov_matrix), ones)
+
         print("Minimum variance portofolio weights:")
         for weight in weights_min:
             print(weight, end=' ')
+
         print('\n')
+
         min_portofolio = self.get_mean_var(weights_min, means, cov_matrix, 'min')
+
         print('Mean:', min_portofolio[0])
         print('Var:', min_portofolio[1])
 
@@ -52,10 +57,14 @@ class Assignment2:
             means - self._rf, inverse_cov_matrix) / np.dot(
                 np.dot(means - self._rf, inverse_cov_matrix), ones)
         print('Tangency portofolio:')
+
         for weight in weights_tan:
             print(weight, end=' ')
+
         print('\n')
+
         tan_portofolio = self.get_mean_var(weights_tan, means, cov_matrix, 'tan')
+
         print('Mean:', tan_portofolio[0])
         print('Var:', tan_portofolio[1])
 
@@ -73,6 +82,7 @@ class Assignment2:
 
         portofolio = {'Returns': port_returns,
                       'Stds': port_stds}
+
         port = pd.DataFrame(portofolio)
         mask = ((port['Returns'] <= 1.0) & (port['Returns'] >= -0.3)) & (port['Stds'] <= 0.6)
         port = port[mask]
@@ -89,13 +99,16 @@ class Assignment2:
         # capital market line
         cpm_means = []
         cpm_stds = []
+
         for _ in range(10000):
             std = np.random.uniform(0, 0.6)
             cpm_stds.append(std)
             cpm_means.append(self._rf + std * (
                 tan_portofolio[0] - self._rf) / np.sqrt(tan_portofolio[1]))
+
         cpm = {'Returns': cpm_means,
                'Stds': cpm_stds}
+
         cpm_df = pd.DataFrame(cpm)
         cpm_df.plot.scatter(ax=ax, x='Stds', y='Returns', c='black', s=0.25)
 
@@ -125,20 +138,38 @@ class Assignment2:
         weights_port = (weights_min + weights_tan) / 2
 
         # plot the histogram of the returns and a marker for the mean
-        self._returns['Portofolio'] = 252 * np.dot(self._returns, weights_port)
+        self._returns['Portofolio'] = np.dot(self._returns, weights_port)
         self._returns.hist(column='Portofolio', bins=150)
         plt.scatter(x=self._returns['Portofolio'].mean(), y=0, c='red', marker='D', s=100)
         plt.title('Returns Histogram')
 
         # plot the histogram of the gains and a marker for the mean
-        self._gains['Portofolio'] = 252 * np.dot(self._gains, weights_port)
+        self._gains['Portofolio'] = np.dot(self._gains, weights_port)
         self._returns.hist(column='Portofolio', bins=150)
         plt.scatter(x=self._gains['Portofolio'].mean(), y=0, c='red', marker='D', s=100)
         plt.title('Gains Histogram')
         plt.show()
 
     def task_4(self):
-        pass
+        # we again compute the weights as in task 3
+        # get the means
+        means = np.asarray(self._returns.mean() * 252)
+        # get the covariance matrix and the inverse
+        cov_matrix = (self._returns.cov() * 252).as_matrix()
+        inverse_cov_matrix = np.linalg.inv(cov_matrix)
+        ones = np.asarray([1] * len(means))
+
+        # weights of the minimum variances portofolio
+        weights_min = np.dot(
+            ones, inverse_cov_matrix) / np.dot(
+                np.dot(ones, inverse_cov_matrix), ones)
+        # weights of the tangency portofolio
+        weights_tan = np.dot(
+            means - self._rf, inverse_cov_matrix) / np.dot(
+                np.dot(means - self._rf, inverse_cov_matrix), ones)
+        # weights of the averaged portofolio
+        weights_port = (weights_min + weights_tan) / 2
+
 
     def get_mean_var(self, weights, means, cov_matrix, portofolio):
         """get the mean and variance based on the portofolio"""
@@ -183,6 +214,7 @@ class Assignment2:
 
         return summation / (counter - 1)
 
-Assignment2().task_1()
+#Assignment2().task_1()
 #Assignment2().task_2()
-#Assignment2().task_3()
+Assignment2().task_3()
+#Assignment2().task_4()
