@@ -13,8 +13,10 @@ class Assignment2:
         self._history = pd.read_csv('history.csv')
         self._future = pd.read_csv('future.csv')
 
-        # change index, calculate returns and drop the first row (since we have n - 1 returns for n days)
-        self._returns = self._history.set_index('date').pct_change().drop('2/25/2013')
+        # change index, calculate returns and drop the first row 
+        # (since we have n - 1 returns for n days)
+        self._returns = \
+            self._history.set_index('date').pct_change().drop('2/25/2013')
 
         # set the gains
         self._gains = np.log(self._returns + 1)
