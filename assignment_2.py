@@ -137,16 +137,16 @@ class Assignment2:
         # weights of the averaged portofolio
         weights_port = (weights_min + weights_tan) / 2
 
-        # plot the histogram of the returns and a marker for the mean
-        self._returns['Portofolio'] = np.dot(self._returns, weights_port)
-        self._returns.hist(column='Portofolio', bins=150)
-        plt.scatter(x=self._returns['Portofolio'].mean(), y=0, c='red', marker='D', s=100)
-        plt.title('Returns Histogram')
+        # calculation of the returns and gains
+        self._history = self._history.set_index('date')
+        self._history['Returns'] = np.dot(self._history, weights_port)
+        self._history = self._history.pct_change().drop('2/25/2013')
+        self._history['Gains'] = np.log(self._history['Returns'] + 1)
 
-        # plot the histogram of the gains and a marker for the mean
-        self._gains['Portofolio'] = np.dot(self._gains, weights_port)
-        self._returns.hist(column='Portofolio', bins=150)
-        plt.scatter(x=self._gains['Portofolio'].mean(), y=0, c='red', marker='D', s=100)
+        # histograms of the returns and gains
+        self._history.hist(column='Returns', bins=100)
+        plt.title('Returns Histogram')
+        self._history.hist(column='Gains', bins=100)
         plt.title('Gains Histogram')
         plt.show()
 
