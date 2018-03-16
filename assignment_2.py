@@ -3,6 +3,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from math import sqrt
+
 
 class Assignment2:
     def __init__(self):
@@ -151,7 +153,7 @@ class Assignment2:
         plt.show()
 
     def task_4(self):
-        # we again compute the weights as in task 3
+        """Task 3: avearge of the min and tan portofolios"""
         # get the means
         means = np.asarray(self._returns.mean() * 252)
         # get the covariance matrix and the inverse
@@ -170,7 +172,21 @@ class Assignment2:
         # weights of the averaged portofolio
         weights_port = (weights_min + weights_tan) / 2
 
+        # calculation of the returns and gains
+        self._history = self._history.set_index('date')
+        self._history['Returns'] = np.dot(self._history, weights_port)
+        self._history = self._history.pct_change().drop('2/25/2013')
+        self._history['Gains'] = np.log(self._history['Returns'] + 1)
 
+        # compute the mean return per year
+        portfolio_mean_return = 252 * self._history['Returns'].mean()
+        portfolio_variance = 252 * self._history['Returns'].var()
+
+        # compute the sharpe ratio
+        sharpe_ratio = (portfolio_mean_return - self._rf) / sqrt(portfolio_variance)
+
+        print("Sharpe ratio for the portfolio = ", sharpe_ratio)
+        
     def get_mean_var(self, weights, means, cov_matrix, portofolio):
         """get the mean and variance based on the portofolio"""
         inverse_cov_matrix = np.linalg.inv(cov_matrix)
@@ -216,5 +232,5 @@ class Assignment2:
 
 #Assignment2().task_1()
 #Assignment2().task_2()
-Assignment2().task_3()
-#Assignment2().task_4()
+#Assignment2().task_3()
+Assignment2().task_4()
