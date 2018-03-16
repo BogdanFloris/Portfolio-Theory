@@ -5,21 +5,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Assignment2:
-    """Assignment 2 Class"""
     def __init__(self):
-        """Init function"""
-        # risk free assest return
-        self._rf = 0.05
+        # risk free asset return
+        self._rf = 0.005
+
         # read data
         self._history = pd.read_csv('history.csv')
         self._future = pd.read_csv('future.csv')
-        # change index, calculate returns and drop the first row NaN's
+
+        # change index, calculate returns and drop the first row (since we have n - 1 returns for n days)
         self._returns = self._history.set_index('date').pct_change().drop('2/25/2013')
+
         # set the gains
         self._gains = np.log(self._returns + 1)
 
     def task_1(self):
-        """Task 1"""
         print(self._returns.mean() * 252)
         print(self._returns.var() * 252)
         print(self._returns.cov() * 252)
@@ -133,7 +133,6 @@ class Assignment2:
         self._returns.hist(column='Portofolio', bins=150)
         plt.scatter(x=self._gains['Portofolio'].mean(), y=0, c='red', marker='D', s=100)
         plt.title('Gains Histogram')
-
         plt.show()
 
     def task_4(self):
@@ -180,6 +179,6 @@ class Assignment2:
             counter += 1
         return summation / (counter - 1)
 
-#Assignment2().task_1()
+Assignment2().task_1()
 #Assignment2().task_2()
-Assignment2().task_3()
+#Assignment2().task_3()
