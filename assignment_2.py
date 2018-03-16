@@ -178,14 +178,30 @@ class Assignment2:
         self._history = self._history.pct_change().drop('2/25/2013')
         self._history['Gains'] = np.log(self._history['Returns'] + 1)
 
-        # compute the mean return per year
-        portfolio_mean_return = 252 * self._history['Returns'].mean()
-        portfolio_variance = 252 * self._history['Returns'].var()
+        # compute the mean return per year, and the variance per year for history.csv
+        portfolio_mean_return_history = 252 * self._history['Returns'].mean()
+        portfolio_variance_history = 252 * self._history['Returns'].var()
 
-        # compute the sharpe ratio
-        sharpe_ratio = (portfolio_mean_return - self._rf) / sqrt(portfolio_variance)
+        # compute the sharpe ratio for history.csv
+        sharpe_ratio_history = (portfolio_mean_return_history - self._rf) / sqrt(portfolio_variance_history)
 
-        print("Sharpe ratio for the portfolio = ", sharpe_ratio)
+        print("Sharpe ratio for the portfolio (history.csv) = ", sharpe_ratio_history)
+
+        # calculate returns for future.csv
+        self._future = self._future.set_index('date')
+        self._future['Returns'] = np.dot(self._future, weights_port)
+        self._future = self._future.pct_change().drop('1/2/2018')
+
+        # compute the mean return per year, and the variance per year for future.csv
+        portfolio_mean_return_future = 252 * self._future['Returns'].mean()
+        portfolio_variance_future = 252 * self._history['Returns'].var()
+        
+        # compute the sharpe ratio for future.csv
+        sharpe_ratio_future = (portfolio_mean_return_future - self._rf) / sqrt(portfolio_variance_future)
+
+        print("Sharpe ratio for the portfolio (future.csv) = ", sharpe_ratio_future)
+
+        # compute the value at risk
         
     def get_mean_var(self, weights, means, cov_matrix, portofolio):
         """get the mean and variance based on the portofolio"""
