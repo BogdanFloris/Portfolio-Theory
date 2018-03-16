@@ -3,6 +3,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats as st
 from math import sqrt
 
 
@@ -172,9 +173,13 @@ class Assignment2:
         # weights of the averaged portofolio
         weights_port = (weights_min + weights_tan) / 2
 
-        # calculation of the returns and gains
+        # calculation of the returns and gains for history.csv
         self._history = self._history.set_index('date')
         self._history['Returns'] = np.dot(self._history, weights_port)
+
+        # value at 0 (12/29/2017) needed to compute the VAR
+        value_at_0 = self._history['Returns'].values[1222]
+
         self._history = self._history.pct_change().drop('2/25/2013')
         self._history['Gains'] = np.log(self._history['Returns'] + 1)
 
@@ -187,10 +192,15 @@ class Assignment2:
 
         print("Sharpe ratio for the portfolio (history.csv) = ", sharpe_ratio_history)
 
-        # calculate returns for future.csv
+        # calculate returns and gains for future.csv
         self._future = self._future.set_index('date')
         self._future['Returns'] = np.dot(self._future, weights_port)
+
+        # value at 37 (after 37 days) to compute the var (date is 02/23/18)
+        value_at_37 = self._future['Returns'].values[36]
+
         self._future = self._future.pct_change().drop('1/2/2018')
+        self._future['Gains'] = np.log(self._future['Returns'] + 1)
 
         # compute the mean return per year, and the variance per year for future.csv
         portfolio_mean_return_future = 252 * self._future['Returns'].mean()
@@ -202,6 +212,22 @@ class Assignment2:
         print("Sharpe ratio for the portfolio (future.csv) = ", sharpe_ratio_future)
 
         # compute the value at risk
+        # note that we already compute the value of the portfolio at time 0 (12/29/17) 
+        # and at time 37 (02/23/18)
+        G_37 = np.log(value_at_37 / value_at_0)
+        mean_normal_dist = 37 * portfolio_mean_return_future
+        var_normal_dist = 37 * portfolio_variance_future
+
+        z_score = st.norm.ppf(0.99, mean_normal_dist, sqrt(var_normal_dist))
+
+        print("mean of the normal distribution = ", mean_normal_dist)
+        print("standard deviation of the normal distribution = ", sqrt(var_normal_dist))
+        print("z_epsilon = ", z_score)
+
+        VAR = value_at_0 * (1 - np.exp((-1) * z_score * sqrt(portfolio_variance_future) + portfolio_mean_return_future))
+
+        # compute the value at risk
+        print("value at risk = ", VAR)
         
     def get_mean_var(self, weights, means, cov_matrix, portofolio):
         """get the mean and variance based on the portofolio"""
